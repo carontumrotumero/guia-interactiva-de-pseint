@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía interactiva de PSeInt - Teoría, estructuras y ejercicios</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['Fira Code', 'Consolas', 'Monaco', 'monospace'],
+                    },
+                    colors: {
+                        pseint: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Estilos personalizados para resaltado de sintaxis y barras de desplazamiento -->
+    <style>
+        /* Resaltado de sintaxis PSeInt */
+        .pseint-code {
+            font-family: 'Fira Code', Consolas, Monaco, monospace;
+            line-height: 1.6;
+            tab-size: 4;
+        }
+        .tok-kw {
+            color: #4f46e5; /* Indigo / Azul-morado */
+            font-weight: 600;
+        }
+        .dark .tok-kw {
+            color: #818cf8;
+        }
+        .tok-type {
+            color: #9333ea; /* Morado */
+            font-weight: 600;
+        }
+        .dark .tok-type {
+            color: #c084fc;
+        }
+        .tok-str {
+            color: #15803d; /* Verde */
+        }
+        .dark .tok-str {
+            color: #4ade80;
+        }
+        .tok-com {
+            color: #6b7280; /* Gris */
+            font-style: italic;
+        }
+        .dark .tok-com {
+            color: #9ca3af;
+        }
+        .tok-num {
+            color: #b45309; /* Ámbar/Naranja */
+        }
+        .dark .tok-num {
+            color: #fbbf24;
+        }
+        .tok-op {
+            color: #be123c; /* Rojo suave para flecha y operadores clave */
+            font-weight: 600;
+        }
+        .dark .tok-op {
+            color: #fb7185;
+        }
+
+        /* Scrollbar estética */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Destacado de búsqueda */
+        mark.search-highlight {
+            background-color: #fef08a;
+            color: #1e293b;
+            padding: 0 2px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .dark mark.search-highlight {
+            background-color: #eab308;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 font-sans antialiased transition-colors duration-200 selection:bg-indigo-500 selection:text-white">
+
+    <!-- BARRA SUPERIOR FIJA -->
+    <header class="sticky top-0 z-40 h-16 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 lg:px-8 flex items-center justify-between gap-4">
+        <!-- Botón Menú Móvil + Título -->
+        <div class="flex items-center gap-3">
+            <button id="mobileMenuBtn" aria-label="Abrir índice" class="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <a href="#" class="flex items-center gap-2.5 group">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:scale-105 transition-transform">
+                    PS
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg leading-tight text-slate-900 dark:text-white">Guía interactiva de PSeInt</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Teoría, estructuras y ejercicios resueltos</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Buscador Rápido de Ejercicios + Botón Tema -->
+        <div class="flex items-center gap-2 sm:gap-4 flex-1 max-w-md justify-end">
+            <div class="relative w-full max-w-xs">
+                <input 
+                    type="text" 
+                    id="globalSearchInput" 
+                    placeholder="Buscar ejercicio (ej. bucle, par, vector)..." 
+                    class="w-full pl-9 pr-8 py-1.5 text-sm rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                >
+                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <button id="clearSearchBtn" title="Limpiar búsqueda" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Botón Modo Claro / Oscuro -->
+            <button id="themeToggleBtn" aria-label="Cambiar tema claro/oscuro" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors shrink-0" title="Cambiar entre modo claro y oscuro">
+                <!-- Icono Sol (visible en dark) -->
+                <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <!-- Icono Luna (visible en light) -->
+                <svg id="moonIcon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- OVERLAY MÓVIL -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-30 hidden lg:hidden"></div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="max-w-7xl mx-auto flex relative">
+
+        <!-- MENÚ LATERAL FIJO (15 APARTADOS) -->
+        <aside id="sidebar" class="fixed lg:sticky top-16 left-0 z-30 w-72 h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 overflow-y-auto transform -translate-x-full lg:translate-x-0 transition-transform duration-300 shrink-0 p-4">
+            <div class="mb-3 px-2 flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Índice de Contenidos</span>
+                <span class="text-xs bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-medium">15 temas</span>
+            </div>
+            <nav id="tocNav" class="space-y-1 text-sm">
+                <a href="#sec-1" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">1</span>
+                    <span class="truncate">Qué es PSeInt y estructura</span>
+                </a>
+                <a href="#sec-2" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">2</span>
+                    <span class="truncate">Variables y tipos de datos</span>
+                </a>
+                <a href="#sec-3" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">3</span>
+                    <span class="truncate">Asignación (&lt;-) vs Comparación (=)</span>
+                </a>
+                <a href="#sec-4" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">4</span>
+                    <span class="truncate">Entrada y Salida (Leer/Escribir)</span>
+                </a>
+                <a href="#sec-5" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">5</span>
+                    <span class="truncate">Operadores (Aritméticos, Lógicos)</span>
+                </a>
+                <a href="#sec-6" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">6</span>
+                    <span class="truncate">Condicionales: Si - Entonces - SiNo</span>
+                </a>
+                <a href="#sec-7" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">7</span>
+                    <span class="truncate">Condicional múltiple: Según</span>
+                </a>
+                <a href="#sec-8" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">8</span>
+                    <span class="truncate">Bucle Mientras (While)</span>
+                </a>
+                <a href="#sec-9" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">9</span>
+                    <span class="truncate">Bucle Repetir - Hasta Que</span>
+                </a>
+                <a href="#sec-10" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">10</span>
+                    <span class="truncate">Bucle Para (For)</span>
+                </a>
+                <a href="#sec-11" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">11</span>
+                    <span class="truncate">Contadores y Acumuladores</span>
+                </a>
+                <a href="#sec-12" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">12</span>
+                    <span class="truncate">Arreglos / Vectores (Dimension)</span>
+                </a>
+                <a href="#sec-13" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">13</span>
+                    <span class="truncate">Funciones integradas útiles</span>
+                </a>
+                <a href="#sec-14" class="nav-link flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span class="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-bold flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">14</span>
+                    <span class="truncate">Chuleta de palabras clave</span>
+                </a>
+                <a href="#sec-15" class="nav-link flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors mt-2 border border-indigo-200 dark:border-indigo-800">
+                    <span class="w-5 h-5 rounded-md bg-indigo-600 text-white text-xs font-bold flex items-center justify-center shrink-0">15</span>
+                    <span class="truncate">22 Ejercicios Resueltos</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="flex-1 min-w-0 px-4 sm:px-8 py-8 space-y-12">
+
+            <!-- CABECERA HERO -->
+            <div class="relative rounded-3xl bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 p-6 sm:p-10 text-white shadow-lg overflow-hidden">
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/20 backdrop-blur-xs mb-4">
+                        ✨ Manual de Estudio Interactivo
+                    </span>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">Guía interactiva de PSeInt</h2>
+                    <p class="text-indigo-100 text-base sm:text-lg mb-6">Teoría, estructuras y ejercicios resueltos paso a paso para dominar los fundamentos de la programación y la lógica algorítmica.</p>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="#sec-15" class="px-4 py-2.5 rounded-xl bg-white text-indigo-700 font-semibold text-sm shadow-xs hover:bg-indigo-50 transition-colors">
+                            Ir a los 22 Ejercicios →
+                        </a>
+                        <a href="#sec-14" class="px-4 py-2.5 rounded-xl bg-indigo-800/60 text-white font-medium text-sm border border-indigo-400/30 hover:bg-indigo-800 transition-colors">
+                            Ver Chuleta Rápida
+                        </a>
+                    </div>
+                </div>
+                <!-- Decoración geométrica -->
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+            </div>
+
+            <!-- ==========================================
+                 1. QUÉ ES PSEINT Y ESTRUCTURA DE UN ALGORITMO
+                 ========================================== -->
+            <section id="sec-1" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">1</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Qué es PSeInt y estructura de un algoritmo</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    <strong>PSeInt</strong> es un intérprete de pseudocódigo en español. Permite escribir algoritmos con palabras en castellano (<code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-sm">Escribir</code>, <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-sm">Leer</code>, <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-sm">Si</code>, <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-sm">Mientras</code>...) sin la sintaxis estricta de un lenguaje real, ideal para aprender lógica de programación.
+                </p>
+                <p class="font-medium text-slate-800 dark:text-slate-200 mb-2">Estructura básica de todo algoritmo:</p>
+                
+                <pre class="code-block">Algoritmo NombreDelAlgoritmo
+	// instrucciones aquí
+FinAlgoritmo</pre>
+
+                <ul class="space-y-2 mt-4 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                    <li><strong>Algoritmo NombreDelAlgoritmo:</strong> marca el inicio. El nombre no puede llevar espacios ni empezar por números.</li>
+                    <li><strong>FinAlgoritmo:</strong> marca el final del programa.</li>
+                    <li>Entre medias van las instrucciones, con sangría (tabulación) para que se lea mejor.</li>
+                </ul>
+
+                <div class="mt-5 p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 flex gap-3 items-start">
+                    <span class="text-blue-600 dark:text-blue-400 font-bold text-lg">💡</span>
+                    <p class="text-sm text-blue-900 dark:text-blue-200">
+                        <strong>Nota:</strong> La mayoría de ejercicios se organizan en tres fases claras: <strong>ENTRADA</strong> (pedir datos al usuario), <strong>PROCESO</strong> (calcular o transformar) y <strong>SALIDA</strong> (mostrar resultados por pantalla).
+                    </p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 2. VARIABLES Y TIPOS DE DATOS
+                 ========================================== -->
+            <section id="sec-2" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">2</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Variables y tipos de datos</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Una variable es una "caja" con nombre en la memoria donde el programa guarda un dato que puede cambiar. Se declara al principio con la palabra clave <strong>Definir</strong>, indicando el nombre de las variables y su tipo:
+                </p>
+
+                <pre class="code-block">Definir nota1, nota2, suma Como Real;
+Definir edad Como Entero;
+Definir nombre Como Caracter;
+Definir esMayor Como Logico;</pre>
+
+                <div class="overflow-x-auto mt-6 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700">
+                                <th class="py-3 px-4 font-bold">Tipo</th>
+                                <th class="py-3 px-4 font-bold">Qué guarda</th>
+                                <th class="py-3 px-4 font-bold">Ejemplos</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="py-3 px-4 font-mono font-semibold text-purple-600 dark:text-purple-400">Entero</td>
+                                <td class="py-3 px-4">Números exactos sin decimales</td>
+                                <td class="py-3 px-4 font-mono">5, -3, 100, 0</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="py-3 px-4 font-mono font-semibold text-purple-600 dark:text-purple-400">Real</td>
+                                <td class="py-3 px-4">Números con decimales (usan punto <code class="font-mono">.</code>)</td>
+                                <td class="py-3 px-4 font-mono">7.5, 3.14, -2.0</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="py-3 px-4 font-mono font-semibold text-purple-600 dark:text-purple-400">Caracter</td>
+                                <td class="py-3 px-4">Texto, letras o palabras entre comillas</td>
+                                <td class="py-3 px-4 font-mono text-green-700 dark:text-green-400">"Hola", "Juan", "A"</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                <td class="py-3 px-4 font-mono font-semibold text-purple-600 dark:text-purple-400">Logico</td>
+                                <td class="py-3 px-4">Valores booleanos (verdadero o falso)</td>
+                                <td class="py-3 px-4 font-mono">Verdadero, Falso</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-5 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 flex gap-3 items-start">
+                    <span class="text-amber-600 dark:text-amber-400 font-bold text-lg">⚠️</span>
+                    <p class="text-sm text-amber-900 dark:text-amber-200">
+                        <strong>Nota:</strong> Si declaras una variable como <code class="font-mono font-semibold">Entero</code> y el usuario introduce un decimal o una división da decimales, dará error de ejecución. Para notas, precios, medias o alturas siempre se usa <code class="font-mono font-semibold">Real</code>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 3. ASIGNACIÓN (<-) FRENTE A COMPARACIÓN (=)
+                 ========================================== -->
+            <section id="sec-3" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">3</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Asignación (&lt;-) frente a Comparación (=)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Es fundamental no confundir guardar un valor con preguntar si dos valores son iguales:
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-indigo-600 dark:text-indigo-400 mb-1">Asignación: <code class="font-mono">&lt;-</code></h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">
+                            La flecha <code class="font-mono font-bold">&lt;-</code> significa <strong>"guarda en"</strong>. Se lee de derecha a izquierda: primero se calcula la expresión de la derecha y el resultado se guarda en la variable de la izquierda.
+                        </p>
+                        <pre class="code-block">suma <- nota1 + nota2;
+contador <- contador + 1;</pre>
+                    </div>
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-emerald-600 dark:text-emerald-400 mb-1">Comparación: <code class="font-mono">=</code></h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">
+                            El signo igual <code class="font-mono font-bold">=</code> sirve para <strong>preguntar si dos cosas son iguales</strong> dentro de una condición (<code class="font-mono">Si</code>, <code class="font-mono">Mientras</code>...). No modifica la variable.
+                        </p>
+                        <pre class="code-block">Si edad = 18 Entonces
+	Escribir "Tienes justo 18 años";
+FinSi</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 4. ENTRADA Y SALIDA DE DATOS (LEER Y ESCRIBIR)
+                 ========================================== -->
+            <section id="sec-4" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">4</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Entrada y Salida de datos (Escribir y Leer)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Para comunicarnos con el usuario utilizamos dos instrucciones fundamentales:
+                </p>
+                <ul class="space-y-2 mb-4 text-slate-600 dark:text-slate-300 list-disc list-inside">
+                    <li><strong>Escribir:</strong> muestra mensajes de texto (entre comillas) o el valor de variables por pantalla. Se pueden unir textos y variables separándolos con comas (<code class="font-mono">,</code>).</li>
+                    <li><strong>Escribir Sin Saltar:</strong> muestra el texto sin hacer salto de línea al final (el cursor se queda en la misma línea).</li>
+                    <li><strong>Leer:</strong> detiene el programa, espera a que el usuario escriba un dato por teclado y lo guarda en la variable indicada.</li>
+                </ul>
+
+                <pre class="code-block">Algoritmo EjemploEntradaSalida
+	Definir nombre Como Caracter;
+	Definir edad Como Entero;
+	
+	Escribir Sin Saltar "Introduce tu nombre: ";
+	Leer nombre;
+	
+	Escribir "Introduce tu edad: ";
+	Leer edad;
+	
+	// Unimos texto y variables usando comas
+	Escribir "Hola ", nombre, ", tienes ", edad, " años.";
+FinAlgoritmo</pre>
+            </section>
+
+            <!-- ==========================================
+                 5. OPERADORES
+                 ========================================== -->
+            <section id="sec-5" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">5</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Operadores Aritméticos, Relacionales y Lógicos</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 mb-6">
+                    PSeInt cuenta con tres familias de operadores para realizar cálculos matemáticos y construir condiciones lógicas:
+                </p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Tabla Aritméticos -->
+                    <div class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        <div class="bg-indigo-50 dark:bg-indigo-950/60 px-4 py-2.5 font-bold text-indigo-900 dark:text-indigo-200 text-sm border-b border-slate-200 dark:border-slate-800">
+                            1. Operadores Aritméticos
+                        </div>
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-xs uppercase text-slate-500">
+                                    <th class="py-2 px-3">Op.</th>
+                                    <th class="py-2 px-3">Significado</th>
+                                    <th class="py-2 px-3">Ejemplo</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                                <tr><td class="py-2 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">+</td><td class="py-2 px-3">Suma</td><td class="py-2 px-3 font-mono">5 + 3 (8)</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">-</td><td class="py-2 px-3">Resta</td><td class="py-2 px-3 font-mono">5 - 3 (2)</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">*</td><td class="py-2 px-3">Multiplicación</td><td class="py-2 px-3 font-mono">4 * 2 (8)</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">/</td><td class="py-2 px-3">División</td><td class="py-2 px-3 font-mono">7 / 2 (3.5)</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">^</td><td class="py-2 px-3">Potencia</td><td class="py-2 px-3 font-mono">3 ^ 2 (9)</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-indigo-600 dark:text-indigo-400">MOD / %</td><td class="py-2 px-3">Resto división</td><td class="py-2 px-3 font-mono">7 MOD 2 (1)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tabla Relacionales -->
+                    <div class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        <div class="bg-blue-50 dark:bg-blue-950/60 px-4 py-2.5 font-bold text-blue-900 dark:text-blue-200 text-sm border-b border-slate-200 dark:border-slate-800">
+                            2. Operadores Relacionales
+                        </div>
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-xs uppercase text-slate-500">
+                                    <th class="py-2 px-3">Op.</th>
+                                    <th class="py-2 px-3">Significado</th>
+                                    <th class="py-2 px-3">Ejemplo</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                                <tr><td class="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">=</td><td class="py-2 px-3">Igual a</td><td class="py-2 px-3 font-mono">x = 5</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">&lt;&gt;</td><td class="py-2 px-3">Distinto de</td><td class="py-2 px-3 font-mono">x &lt;&gt; 0</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">&gt;</td><td class="py-2 px-3">Mayor que</td><td class="py-2 px-3 font-mono">x &gt; 10</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">&lt;</td><td class="py-2 px-3">Menor que</td><td class="py-2 px-3 font-mono">x &lt; 10</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">&gt;=</td><td class="py-2 px-3">Mayor o igual</td><td class="py-2 px-3 font-mono">nota &gt;= 5</td></tr>
+                                <tr><td class="py-2 px-3 font-mono font-bold text-blue-600 dark:text-blue-400">&lt;=</td><td class="py-2 px-3">Menor o igual</td><td class="py-2 px-3 font-mono">edad &lt;= 18</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tabla Lógicos -->
+                    <div class="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                        <div class="bg-purple-50 dark:bg-purple-950/60 px-4 py-2.5 font-bold text-purple-900 dark:text-purple-200 text-sm border-b border-slate-200 dark:border-slate-800">
+                            3. Operadores Lógicos
+                        </div>
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-800/50 text-xs uppercase text-slate-500">
+                                    <th class="py-2 px-3">Op.</th>
+                                    <th class="py-2 px-3">Regla</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                                <tr>
+                                    <td class="py-2.5 px-3 font-mono font-bold text-purple-600 dark:text-purple-400">Y</td>
+                                    <td class="py-2.5 px-3">Verdadero solo si <strong>ambas</strong> condiciones se cumplen.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-mono font-bold text-purple-600 dark:text-purple-400">O</td>
+                                    <td class="py-2.5 px-3">Verdadero si <strong>al menos una</strong> condición se cumple.</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-mono font-bold text-purple-600 dark:text-purple-400">NO</td>
+                                    <td class="py-2.5 px-3">Invierte el valor lógico (Verdadero pasa a Falso).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mt-5 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 flex gap-3 items-start">
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold text-lg">🎯</span>
+                    <p class="text-sm text-emerald-900 dark:text-emerald-200">
+                        <strong>Truco clave con MOD:</strong> Para saber si un número <code class="font-mono">n</code> es <strong>par</strong>, comprobamos si al dividirlo entre 2 el resto es cero: <code class="font-mono font-semibold">n MOD 2 = 0</code>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 6. CONDICIONALES: SI - ENTONCES - SINO
+                 ========================================== -->
+            <section id="sec-6" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">6</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Condicionales: Si - Entonces - SiNo</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Permite que el programa tome decisiones. Si la condición es <strong>Verdadera</strong>, ejecuta el bloque tras <code class="font-mono">Entonces</code>. Si es <strong>Falsa</strong>, ejecuta el bloque tras <code class="font-mono">SiNo</code> (el bloque <code class="font-mono">SiNo</code> es opcional). También se pueden anidar unos dentro de otros.
+                </p>
+
+                <pre class="code-block">Algoritmo EjemploCondicional
+	Definir nota Como Real;
+	Escribir "Introduce tu nota (0 a 10):";
+	Leer nota;
+	
+	Si nota >= 5 Entonces
+		Escribir "¡Has aprobado!";
+	SiNo
+		Escribir "Has suspendido. Toca recuperar.";
+	FinSi
+FinAlgoritmo</pre>
+            </section>
+
+            <!-- ==========================================
+                 7. CONDICIONAL MÚLTIPLE: SEGÚN
+                 ========================================== -->
+            <section id="sec-7" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">7</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Condicional múltiple: Según (Switch)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Cuando tenemos que evaluar muchos valores exactos de una misma variable numérica (por ejemplo, un menú de opciones o los días de la semana del 1 al 7), <code class="font-mono">Segun</code> es mucho más limpio que encadenar muchos <code class="font-mono">Si</code>. Si el valor no coincide con ningún caso, se ejecuta <code class="font-mono">De Otro Modo</code>.
+                </p>
+
+                <pre class="code-block">Algoritmo EjemploSegun
+	Definir opcion Como Entero;
+	Escribir "Menú: 1. Sumar | 2. Restar | 3. Salir";
+	Leer opcion;
+	
+	Segun opcion Hacer
+		1:
+			Escribir "Has elegido Sumar";
+		2:
+			Escribir "Has elegido Restar";
+		3:
+			Escribir "Saliendo del programa...";
+		De Otro Modo:
+			Escribir "Error: opción no válida";
+	FinSegun
+FinAlgoritmo</pre>
+            </section>
+
+            <!-- ==========================================
+                 8. BUCLE MIENTRAS (WHILE)
+                 ========================================== -->
+            <section id="sec-8" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">8</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Bucle Mientras (While)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Repite un bloque de instrucciones <strong>mientras la condición sea Verdadera</strong>. Como evalúa la condición <em>antes</em> de entrar, si al principio la condición ya es falsa, no se ejecutará ni una sola vez.
+                </p>
+
+                <pre class="code-block">Algoritmo EjemploMientras
+	Definir i Como Entero;
+	i <- 1; // 1. Inicializar variable de control
+	
+	Mientras i <= 5 Hacer // 2. Condición de permanencia
+		Escribir "Número: ", i;
+		i <- i + 1; // 3. Avanzar para evitar un bucle infinito
+	FinMientras
+FinAlgoritmo</pre>
+            </section>
+
+            <!-- ==========================================
+                 9. BUCLE REPETIR - HASTA QUE
+                 ========================================== -->
+            <section id="sec-9" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">9</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Bucle Repetir - Hasta Que (Do-While)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    A diferencia de <code class="font-mono">Mientras</code>, este bucle evalúa la condición <strong>al final</strong>, por lo que sus instrucciones se ejecutan <strong>como mínimo una vez</strong>. Además, se repite mientras la condición sea Falsa y <strong>se detiene cuando la condición de <code class="font-mono">Hasta Que</code> se cumple</strong>. Es ideal para validar datos de entrada o contraseñas.
+                </p>
+
+                <pre class="code-block">Algoritmo ValidarNotaPositiva
+	Definir nota Como Real;
+	
+	Repetir
+		Escribir "Introduce una nota válida (entre 0 y 10):";
+		Leer nota;
+	Hasta Que nota >= 0 Y nota <= 10
+	
+	Escribir "Nota registrada correctamente: ", nota;
+FinAlgoritmo</pre>
+            </section>
+
+            <!-- ==========================================
+                 10. BUCLE PARA (FOR)
+                 ========================================== -->
+            <section id="sec-10" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">10</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Bucle Para (For)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Se utiliza cuando sabemos de antemano <strong>cuántas veces exactas</strong> queremos repetir algo. Él mismo inicializa la variable contadora y la incrementa automáticamente en cada vuelta (<code class="font-mono">Con Paso 1</code> por defecto, o <code class="font-mono">Con Paso -1</code> para cuenta atrás).
+                </p>
+
+                <pre class="code-block">Algoritmo EjemploPara
+	Definir i Como Entero;
+	
+	// Cuenta del 1 al 5 sumando de 1 en 1
+	Para i <- 1 Hasta 5 Con Paso 1 Hacer
+		Escribir "Vuelta número: ", i;
+	FinPara
+FinAlgoritmo</pre>
+            </section>
+
+            <!-- ==========================================
+                 11. CONTADORES Y ACUMULADORES
+                 ========================================== -->
+            <section id="sec-11" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">11</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Contadores y Acumuladores</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Son variables normales que se usan dentro de los bucles con un propósito especial. <strong>Siempre deben inicializarse (normalmente a 0) antes del bucle</strong>:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-indigo-600 dark:text-indigo-400 mb-1">Contador (suma una cantidad fija)</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">Sirve para contar cuántos elementos cumplen una condición (ej. cuántos aprobados hay).</p>
+                        <pre class="code-block">cuenta <- 0;
+// Dentro del bucle:
+cuenta <- cuenta + 1;</pre>
+                    </div>
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                        <h4 class="font-bold text-purple-600 dark:text-purple-400 mb-1">Acumulador (suma una cantidad variable)</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-3">Sirve para ir sumando totales (ej. la suma de todos los precios o todas las notas).</p>
+                        <pre class="code-block">sumaTotal <- 0;
+// Dentro del bucle:
+sumaTotal <- sumaTotal + precio;</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 12. ARREGLOS / VECTORES (DIMENSION)
+                 ========================================== -->
+            <section id="sec-12" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">12</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Arreglos o Vectores (Dimension)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                    Un vector (o arreglo) es una colección de variables del mismo tipo guardadas bajo un único nombre y numeradas por un <strong>índice</strong> entre corchetes <code class="font-mono">[i]</code>. En PSeInt (configuración estándar), las posiciones empiezan en <strong>1</strong>. Se crean con la palabra clave <code class="font-mono">Dimension</code> y se recorren casi siempre con un bucle <code class="font-mono">Para</code>.
+                </p>
+
+                <pre class="code-block">Algoritmo EjemploVector
+	Definir datos, i Como Entero;
+	Dimension datos[5]; // Crea un vector con 5 casillas (datos[1] a datos[5])
+	
+	Para i <- 1 Hasta 5 Con Paso 1 Hacer
+		Escribir "Introduce el valor para la casilla ", i, ":";
+		Leer datos[i];
+	FinPara
+FinAlgoritmo</pre>
+            </section>
+
+            <!-- ==========================================
+                 13. FUNCIONES INTEGRADAS ÚTILES
+                 ========================================== -->
+            <section id="sec-13" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">13</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Funciones integradas útiles (Matemáticas y Texto)</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 mb-4">
+                    PSeInt incluye funciones listas para usar con números y cadenas de caracteres:
+                </p>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700">
+                                <th class="py-3 px-4 font-bold">Función</th>
+                                <th class="py-3 px-4 font-bold">Descripción</th>
+                                <th class="py-3 px-4 font-bold">Ejemplo y Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">rc(x) / raiz(x)</td>
+                                <td class="py-2.5 px-4">Calcula la raíz cuadrada de <code class="font-mono">x</code></td>
+                                <td class="py-2.5 px-4 font-mono">rc(16) -> 4</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">abs(x)</td>
+                                <td class="py-2.5 px-4">Valor absoluto (quita el signo negativo)</td>
+                                <td class="py-2.5 px-4 font-mono">abs(-8) -> 8</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">trunc(x) / redon(x)</td>
+                                <td class="py-2.5 px-4">Quita los decimales / Redondea al entero más cercano</td>
+                                <td class="py-2.5 px-4 font-mono">trunc(4.8) -> 4 | redon(4.8) -> 5</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">azar(n) / Aleatorio(a,b)</td>
+                                <td class="py-2.5 px-4">Genera entero al azar entre 0 y n-1 / o entre a y b</td>
+                                <td class="py-2.5 px-4 font-mono">Aleatorio(1, 10)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Longitud(texto)</td>
+                                <td class="py-2.5 px-4">Devuelve cuántas letras tiene una palabra</td>
+                                <td class="py-2.5 px-4 font-mono">Longitud("Hola") -> 4</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Subcadena(txt, ini, fin)</td>
+                                <td class="py-2.5 px-4">Extrae caracteres desde la posición <code class="font-mono">ini</code> hasta <code class="font-mono">fin</code></td>
+                                <td class="py-2.5 px-4 font-mono">Subcadena("Hola", 1, 1) -> "H"</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Mayusculas(t) / Minusculas(t)</td>
+                                <td class="py-2.5 px-4">Convierte todo el texto a mayúsculas o minúsculas</td>
+                                <td class="py-2.5 px-4 font-mono">Mayusculas("abc") -> "ABC"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 14. CHULETA DE PALABRAS CLAVE
+                 ========================================== -->
+            <section id="sec-14" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold flex items-center justify-center">14</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Chuleta rápida de palabras clave</h3>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 mb-4">
+                    Resumen de referencia con todas las instrucciones esenciales para tus exámenes y prácticas:
+                </p>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border-b border-slate-200 dark:border-slate-700">
+                                <th class="py-3 px-4 font-bold">Palabra Clave</th>
+                                <th class="py-3 px-4 font-bold">Para qué sirve</th>
+                                <th class="py-3 px-4 font-bold">Cierre obligatorio</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Algoritmo Nombre</td>
+                                <td class="py-2.5 px-4">Inicia el programa principal</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">FinAlgoritmo</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Definir var Como Tipo</td>
+                                <td class="py-2.5 px-4">Declara variables (Entero, Real, Caracter, Logico)</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">; (punto y coma)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Escribir / Leer</td>
+                                <td class="py-2.5 px-4">Muestra datos en pantalla / Pide datos por teclado</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">; (punto y coma)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Si cond Entonces ... SiNo</td>
+                                <td class="py-2.5 px-4">Toma decisiones según se cumpla o no la condición</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">FinSi</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Segun var Hacer</td>
+                                <td class="py-2.5 px-4">Evalúa múltiples casos numéricos de una variable</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">FinSegun</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Mientras cond Hacer</td>
+                                <td class="py-2.5 px-4">Repite mientras la condición sea Verdadera</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">FinMientras</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Repetir ... Hasta Que cond</td>
+                                <td class="py-2.5 px-4">Repite al menos una vez hasta que la condición se cumpla</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">Hasta Que (cond)</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Para v &lt;- ini Hasta fin Hacer</td>
+                                <td class="py-2.5 px-4">Bucle con contador automático de principio a fin</td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">FinPara</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-mono font-semibold text-indigo-600 dark:text-indigo-400">Dimension vec[tam]</td>
+                                <td class="py-2.5 px-4">Crea un arreglo o lista de tamaño <code class="font-mono">tam</code></td>
+                                <td class="py-2.5 px-4 font-mono text-slate-500">; (punto y coma)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 15. COLECCIÓN DE 22 EJERCICIOS RESUELTOS
+                 ========================================== -->
+            <section id="sec-15" class="scroll-mt-20 bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-xs">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center shrink-0">15</span>
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">Colección de 22 Ejercicios Resueltos</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Haz clic en "Ver código" en cada tarjeta para desplegar la solución comentada.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button id="expandAllBtn" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                            Abrir todos
+                        </button>
+                        <button id="collapseAllBtn" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                            Cerrar todos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros rápidos y estado de búsqueda -->
+                <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-400 uppercase mr-1">Filtrar por tema:</span>
+                        <button data-filter="" class="filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-indigo-600 text-white transition-colors">Todos (22)</button>
+                        <button data-filter="secuencial" class="filter-chip px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors">Básicos</button>
+                        <button data-filter="condicional" class="filter-chip px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors">Condicionales (Si/Según)</button>
+                        <button data-filter="bucle" class="filter-chip px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors">Bucles (Mientras/Para/Repetir)</button>
+                        <button data-filter="vector" class="filter-chip px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors">Vectores y Texto</button>
+                    </div>
+                    <div id="searchResultCount" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hidden"></div>
+                </div>
+
+                <!-- Contenedor de las 22 tarjetas de ejercicios -->
+                <div id="exercisesContainer" class="space-y-4"></div>
+
+                <!-- Mensaje si no hay resultados -->
+                <div id="noExercisesMsg" class="hidden text-center py-12">
+                    <p class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-1">No se encontraron ejercicios con esa palabra clave</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Prueba con términos como "bucle", "Mientras", "Para", "Repetir", "par", "media", "vector" o "Si".</p>
+                    <button id="resetSearchBtn" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors">
+                        Mostrar los 22 ejercicios
+                    </button>
+                </div>
+            </section>
+
+            <!-- PIE DE PÁGINA -->
+            <footer class="pt-8 pb-12 text-center text-xs text-slate-400 dark:text-slate-500 border-t border-slate-200 dark:border-slate-800">
+                <p>Guía interactiva de PSeInt • Diseñada para el aprendizaje de lógica de programación y algoritmos en español.</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT: DATOS DE EJERCICIOS, RESALTADO Y LÓGICA UI
+         ========================================== -->
+    <script>
+        // 1. COLECCIÓN DE LOS 22 EJERCICIOS RESUELTOS
+        const exercisesData = [
+            {
+                id: 1,
+                title: "Suma y media de tres notas",
+                category: "secuencial básico real entrada salida",
+                tags: ["Secuencial", "Real", "Leer / Escribir"],
+                statement: "Pedir al usuario tres notas por teclado, calcular su suma total y su nota media (promedio), y mostrar ambos resultados por pantalla.",
+                code: `Algoritmo SumaYMediaNotas
+	Definir nota1, nota2, nota3, suma, media Como Real;
+	
+	// ENTRADA DE DATOS
+	Escribir "Introduce la primera nota:";
+	Leer nota1;
+	Escribir "Introduce la segunda nota:";
+	Leer nota2;
+	Escribir "Introduce la tercera nota:";
+	Leer nota3;
+	
+	// PROCESO
+	suma <- nota1 + nota2 + nota3;
+	media <- suma / 3;
+	
+	// SALIDA DE RESULTADOS
+	Escribir "La suma de las notas es: ", suma;
+	Escribir "La nota media es: ", media;
+FinAlgoritmo`
+            },
+            {
+                id: 2,
+                title: "Área y perímetro de un rectángulo",
+                category: "secuencial básico geometría fórmulas real",
+                tags: ["Secuencial", "Fórmulas"],
+                statement: "Solicitar la base y la altura de un rectángulo y calcular su área (base * altura) y su perímetro (2 * base + 2 * altura).",
+                code: `Algoritmo RectanguloAreaPerimetro
+	Definir base, altura, area, perimetro Como Real;
+	
+	Escribir "Introduce la base del rectángulo:";
+	Leer base;
+	Escribir "Introduce la altura del rectángulo:";
+	Leer altura;
+	
+	area <- base * altura;
+	perimetro <- 2 * (base + altura);
+	
+	Escribir "El área del rectángulo es: ", area;
+	Escribir "El perímetro del rectángulo es: ", perimetro;
+FinAlgoritmo`
+            },
+            {
+                id: 3,
+                title: "Conversor de grados Celsius a Fahrenheit",
+                category: "secuencial básico temperatura fórmulas real",
+                tags: ["Secuencial", "Conversión"],
+                statement: "Leer una temperatura en grados Celsius (°C) y convertirla a grados Fahrenheit (°F) aplicando la fórmula: F = (C * 9/5) + 32.",
+                code: `Algoritmo ConversorTemperatura
+	Definir celsius, fahrenheit Como Real;
+	
+	Escribir "Introduce la temperatura en grados Celsius (°C):";
+	Leer celsius;
+	
+	fahrenheit <- (celsius * 9 / 5) + 32;
+	
+	Escribir celsius, " °C equivalen a ", fahrenheit, " °F.";
+FinAlgoritmo`
+            },
+            {
+                id: 4,
+                title: "Intercambio del valor de dos variables (Variable Auxiliar)",
+                category: "secuencial básico intercambio auxiliar lógica",
+                tags: ["Secuencial", "Lógica", "Auxiliar"],
+                statement: "Leer dos números enteros en las variables A y B, e intercambiar sus valores utilizando una variable auxiliar para no perder ningún dato.",
+                code: `Algoritmo IntercambiarVariables
+	Definir a, b, aux Como Entero;
+	
+	Escribir "Introduce el valor de A:";
+	Leer a;
+	Escribir "Introduce el valor de B:";
+	Leer b;
+	
+	Escribir "Antes del cambio -> A = ", a, ", B = ", b;
+	
+	// Guardamos A en aux antes de sobrescribirla
+	aux <- a;
+	a <- b;
+	b <- aux;
+	
+	Escribir "Después del cambio -> A = ", a, ", B = ", b;
+FinAlgoritmo`
+            },
+            {
+                id: 5,
+                title: "Comprobar si un número es Par o Impar",
+                category: "condicional si sino mod par impar resto",
+                tags: ["Condicional", "Si - SiNo", "MOD"],
+                statement: "Pedir un número entero por teclado e indicar si es par o impar utilizando el operador módulo (MOD).",
+                code: `Algoritmo NumeroParOImpar
+	Definir num Como Entero;
+	
+	Escribir "Introduce un número entero:";
+	Leer num;
+	
+	// Si el resto de dividir entre 2 es 0, es par
+	Si num MOD 2 = 0 Entonces
+		Escribir "El número ", num, " es PAR.";
+	SiNo
+		Escribir "El número ", num, " es IMPAR.";
+	FinSi
+FinAlgoritmo`
+            },
+            {
+                id: 6,
+                title: "Mayor de dos números (o si son iguales)",
+                category: "condicional si sino anidado comparar mayor",
+                tags: ["Condicional", "Si Anidado"],
+                statement: "Leer dos números y mostrar por pantalla cuál de los dos es el mayor, o bien indicar si ambos números son exactamente iguales.",
+                code: `Algoritmo MayorDeDosNumeros
+	Definir n1, n2 Como Real;
+	
+	Escribir "Introduce el primer número:";
+	Leer n1;
+	Escribir "Introduce el segundo número:";
+	Leer n2;
+	
+	Si n1 > n2 Entonces
+		Escribir "El mayor es el primer número: ", n1;
+	SiNo
+		Si n2 > n1 Entonces
+			Escribir "El mayor es el segundo número: ", n2;
+		SiNo
+			Escribir "Ambos números son iguales (", n1, ").";
+		FinSi
+	FinSi
+FinAlgoritmo`
+            },
+            {
+                id: 7,
+                title: "Mayor de tres números con operadores lógicos",
+                category: "condicional si sino operador logico Y mayor tres",
+                tags: ["Condicional", "Operador Y"],
+                statement: "Pedir tres números distintos e imprimir cuál de los tres es el mayor empleando el operador lógico Y.",
+                code: `Algoritmo MayorDeTresNumeros
+	Definir a, b, c Como Real;
+	
+	Escribir "Introduce tres números:";
+	Leer a, b, c;
+	
+	Si a >= b Y a >= c Entonces
+		Escribir "El número mayor es: ", a;
+	SiNo
+		Si b >= a Y b >= c Entonces
+			Escribir "El número mayor es: ", b;
+		SiNo
+			Escribir "El número mayor es: ", c;
+		FinSi
+	FinSi
+FinAlgoritmo`
+            },
+            {
+                id: 8,
+                title: "Calificación escolar con notas de texto",
+                category: "condicional si sino notas calificacion rangos",
+                tags: ["Condicional", "Rangos", "Operador Y"],
+                statement: "Pedir una nota numérica de 0 a 10 y mostrar su calificación escrita: Insuficiente (<5), Suficiente (5 a <6), Bien (6 a <7), Notable (7 a <9) o Sobresaliente (9 a 10).",
+                code: `Algoritmo CalificacionEscolar
+	Definir nota Como Real;
+	
+	Escribir "Introduce la nota del examen (0 a 10):";
+	Leer nota;
+	
+	Si nota < 0 O nota > 10 Entonces
+		Escribir "Error: la nota debe estar entre 0 y 10.";
+	SiNo
+		Si nota < 5 Entonces
+			Escribir "Calificación: INSUFICIENTE";
+		SiNo
+			Si nota < 6 Entonces
+				Escribir "Calificación: SUFICIENTE";
+			SiNo
+				Si nota < 7 Entonces
+					Escribir "Calificación: BIEN";
+				SiNo
+					Si nota < 9 Entonces
+						Escribir "Calificación: NOTABLE";
+					SiNo
+						Escribir "Calificación: SOBRESALIENTE";
+					FinSi
+				FinSi
+			FinSi
+		FinSi
+	FinSi
+FinAlgoritmo`
+            },
+            {
+                id: 9,
+                title: "Descuento en tienda según el importe de compra",
+                category: "condicional si sino porcentaje descuento tienda",
+                tags: ["Condicional", "Porcentajes"],
+                statement: "Una tienda aplica un 15% de descuento si la compra supera los 100 €. Pedir el importe de la compra y mostrar el descuento aplicado y el total final a pagar.",
+                code: `Algoritmo DescuentoTienda
+	Definir compra, descuento, total Como Real;
+	
+	Escribir "Introduce el importe de la compra (€):";
+	Leer compra;
+	
+	descuento <- 0;
+	
+	Si compra > 100 Entonces
+		descuento <- compra * 0.15;
+		Escribir "¡Se aplica un 15% de descuento! Ahorras: ", descuento, " €";
+	SiNo
+		Escribir "No se alcanza el mínimo para descuento.";
+	FinSi
+	
+	total <- compra - descuento;
+	Escribir "Total final a pagar: ", total, " €";
+FinAlgoritmo`
+            },
+            {
+                id: 10,
+                title: "Día de la semana con estructura Según",
+                category: "condicional multiple segun switch dia semana",
+                tags: ["Condicional Múltiple", "Según"],
+                statement: "Pedir un número entero del 1 al 7 y mostrar el nombre del día de la semana correspondiente (1 = Lunes ... 7 = Domingo) usando la estructura Según.",
+                code: `Algoritmo DiaDeLaSemana
+	Definir dia Como Entero;
+	
+	Escribir "Introduce un número del 1 al 7:";
+	Leer dia;
+	
+	Segun dia Hacer
+		1: Escribir "Lunes";
+		2: Escribir "Martes";
+		3: Escribir "Miércoles";
+		4: Escribir "Jueves";
+		5: Escribir "Viernes";
+		6: Escribir "Sábado";
+		7: Escribir "Domingo";
+		De Otro Modo:
+			Escribir "Error: el número debe estar entre 1 y 7.";
+	FinSegun
+FinAlgoritmo`
+            },
+            {
+                id: 11,
+                title: "Calculadora básica de 4 operaciones con Según",
+                category: "condicional multiple segun calculadora menu",
+                tags: ["Condicional Múltiple", "Según", "Menú"],
+                statement: "Pedir dos números reales y mostrar un menú con 4 opciones (1: Sumar, 2: Restar, 3: Multiplicar, 4: Dividir). Controlar que no se pueda dividir entre cero.",
+                code: `Algoritmo CalculadoraBasica
+	Definir num1, num2, resultado Como Real;
+	Definir opcion Como Entero;
+	
+	Escribir "Introduce el primer número:";
+	Leer num1;
+	Escribir "Introduce el segundo número:";
+	Leer num2;
+	
+	Escribir "Elige operación: 1.Sumar | 2.Restar | 3.Multiplicar | 4.Dividir";
+	Leer opcion;
+	
+	Segun opcion Hacer
+		1:
+			resultado <- num1 + num2;
+			Escribir "Resultado de la suma: ", resultado;
+		2:
+			resultado <- num1 - num2;
+			Escribir "Resultado de la resta: ", resultado;
+		3:
+			resultado <- num1 * num2;
+			Escribir "Resultado de la multiplicación: ", resultado;
+		4:
+			Si num2 <> 0 Entonces
+				resultado <- num1 / num2;
+				Escribir "Resultado de la división: ", resultado;
+			SiNo
+				Escribir "Error: No se puede dividir entre cero.";
+			FinSi
+		De Otro Modo:
+			Escribir "Opción no válida.";
+	FinSegun
+FinAlgoritmo`
+            },
+            {
+                id: 12,
+                title: "Contador del 1 al 10 con bucle Mientras",
+                category: "bucle mientras while contador",
+                tags: ["Bucle", "Mientras", "Contador"],
+                statement: "Mostrar por pantalla los números del 1 al 10 en orden ascendente utilizando una estructura repetitiva Mientras.",
+                code: `Algoritmo ContadorUnoADiez
+	Definir i Como Entero;
+	
+	i <- 1; // Inicialización
+	
+	Mientras i <= 10 Hacer
+		Escribir i;
+		i <- i + 1; // Incremento del contador
+	FinMientras
+FinAlgoritmo`
+            },
+            {
+                id: 13,
+                title: "Sumar números hasta introducir un 0 (Centinela)",
+                category: "bucle mientras acumulador contador centinela",
+                tags: ["Bucle", "Mientras", "Acumulador"],
+                statement: "Pedir números al usuario de forma repetida e ir sumándolos. El programa terminará cuando el usuario introduzca el número 0, mostrando la suma total y cuántos números se introdujeron.",
+                code: `Algoritmo SumaConCentinelaCero
+	Definir num, suma, cantidad Como Entero;
+	
+	suma <- 0;
+	cantidad <- 0;
+	
+	Escribir "Introduce un número (0 para terminar):";
+	Leer num;
+	
+	Mientras num <> 0 Hacer
+		suma <- suma + num;
+		cantidad <- cantidad + 1;
+		
+		Escribir "Introduce otro número (0 para terminar):";
+		Leer num;
+	FinMientras
+	
+	Escribir "Has introducido ", cantidad, " números.";
+	Escribir "La suma total acumulada es: ", suma;
+FinAlgoritmo`
+            },
+            {
+                id: 14,
+                title: "Validación de contraseña con Repetir - Hasta Que",
+                category: "bucle repetir hasta que validacion clave texto",
+                tags: ["Bucle", "Repetir - Hasta Que", "Validación"],
+                statement: "Pedir al usuario una contraseña de acceso y no dejarle avanzar hasta que escriba exactamente la clave secreta \"1234\".",
+                code: `Algoritmo ValidarContrasena
+	Definir clave Como Caracter;
+	
+	Repetir
+		Escribir "Introduce la contraseña de acceso:";
+		Leer clave;
+		
+		Si clave <> "1234" Entonces
+			Escribir "Contraseña incorrecta. Inténtalo de nuevo.";
+		FinSi
+	Hasta Que clave = "1234"
+	
+	Escribir "¡Acceso concedido! Bienvenido al sistema.";
+FinAlgoritmo`
+            },
+            {
+                id: 15,
+                title: "Juego: Adivinar un número secreto (1 al 50)",
+                category: "bucle repetir hasta que aleatorio azar juego condicional",
+                tags: ["Bucle", "Repetir - Hasta Que", "Aleatorio"],
+                statement: "El programa genera un número al azar entre 1 y 50. El usuario debe intentar adivinarlo y el algoritmo le dará pistas (\"Es mayor\" o \"Es menor\") hasta que acierte, contando los intentos.",
+                code: `Algoritmo AdivinaElNumero
+	Definir secreto, intento, contadorIntentos Como Entero;
+	
+	secreto <- Aleatorio(1, 50);
+	contadorIntentos <- 0;
+	
+	Escribir "¡Adivina el número secreto entre 1 y 50!";
+	
+	Repetir
+		Escribir Sin Saltar "Tu intento: ";
+		Leer intento;
+		contadorIntentos <- contadorIntentos + 1;
+		
+		Si intento < secreto Entonces
+			Escribir "Pista: El número secreto es MAYOR.";
+		SiNo
+			Si intento > secreto Entonces
+				Escribir "Pista: El número secreto es MENOR.";
+			FinSi
+		FinSi
+	Hasta Que intento = secreto
+	
+	Escribir "¡Correcto! Lo lograste en ", contadorIntentos, " intentos.";
+FinAlgoritmo`
+            },
+            {
+                id: 16,
+                title: "Tabla de multiplicar de un número (Bucle Para)",
+                category: "bucle para for tabla multiplicar",
+                tags: ["Bucle", "Para"],
+                statement: "Pedir un número entero al usuario y mostrar por pantalla su tabla de multiplicar completa del 1 al 10 usando un bucle Para.",
+                code: `Algoritmo TablaDeMultiplicar
+	Definir num, i Como Entero;
+	
+	Escribir "¿De qué número quieres ver la tabla de multiplicar?";
+	Leer num;
+	
+	Escribir "--- Tabla del ", num, " ---";
+	Para i <- 1 Hasta 10 Con Paso 1 Hacer
+		Escribir num, " x ", i, " = ", (num * i);
+	FinPara
+FinAlgoritmo`
+            },
+            {
+                id: 17,
+                title: "Suma de los primeros N números naturales",
+                category: "bucle para for acumulador suma naturales",
+                tags: ["Bucle", "Para", "Acumulador"],
+                statement: "Solicitar un número entero positivo N y calcular la suma de todos los números desde 1 hasta N (1 + 2 + 3 + ... + N).",
+                code: `Algoritmo SumaPrimerosNaturales
+	Definir n, i, suma Como Entero;
+	
+	Escribir "Introduce el valor de N:";
+	Leer n;
+	
+	suma <- 0; // Inicializamos el acumulador
+	
+	Para i <- 1 Hasta n Con Paso 1 Hacer
+		suma <- suma + i;
+	FinPara
+	
+	Escribir "La suma de los números del 1 al ", n, " es: ", suma;
+FinAlgoritmo`
+            },
+            {
+                id: 18,
+                title: "Cálculo del Factorial de un número",
+                category: "bucle para for factorial acumulador producto",
+                tags: ["Bucle", "Para", "Factorial"],
+                statement: "Calcular el factorial de un número entero positivo N (N! = 1 * 2 * 3 * ... * N). Recuerda que el acumulador de multiplicaciones debe inicializarse en 1.",
+                code: `Algoritmo CalculoFactorial
+	Definir n, i Como Entero;
+	Definir factorial Como Real;
+	
+	Escribir "Introduce un número entero positivo para calcular su factorial:";
+	Leer n;
+	
+	factorial <- 1; // En productos se inicializa a 1 (no a 0)
+	
+	Para i <- 1 Hasta n Con Paso 1 Hacer
+		factorial <- factorial * i;
+	FinPara
+	
+	Escribir "El factorial de ", n, " (", n, "!) es: ", factorial;
+FinAlgoritmo`
+            },
+            {
+                id: 19,
+                title: "Contar pares e impares de una lista de 10 números",
+                category: "bucle para for condicional si mod contador pares impares",
+                tags: ["Bucle", "Para", "Contador", "MOD"],
+                statement: "Pedir al usuario 10 números enteros mediante un bucle Para y, al finalizar, mostrar cuántos de ellos fueron pares y cuántos fueron impares.",
+                code: `Algoritmo ContarParesEImpares
+	Definir i, num, pares, impares Como Entero;
+	
+	pares <- 0;
+	impares <- 0;
+	
+	Para i <- 1 Hasta 10 Con Paso 1 Hacer
+		Escribir Sin Saltar "Introduce el número ", i, " de 10: ";
+		Leer num;
+		
+		Si num MOD 2 = 0 Entonces
+			pares <- pares + 1;
+		SiNo
+			impares <- impares + 1;
+		FinSi
+	FinPara
+	
+	Escribir "Total de números PARES: ", pares;
+	Escribir "Total de números IMPARES: ", impares;
+FinAlgoritmo`
+            },
+            {
+                id: 20,
+                title: "Encontrar el máximo y el mínimo de N números",
+                category: "bucle para for condicional maximo minimo mayor menor",
+                tags: ["Bucle", "Para", "Máximo / Mínimo"],
+                statement: "Preguntar cuántos números se van a introducir (N), pedirlos por teclado y determinar cuál ha sido el número más alto (máximo) y el más bajo (mínimo).",
+                code: `Algoritmo MaximoYMinimo
+	Definir n, i Como Entero;
+	Definir num, maximo, minimo Como Real;
+	
+	Escribir "¿Cuántos números vas a introducir?";
+	Leer n;
+	
+	Para i <- 1 Hasta n Con Paso 1 Hacer
+		Escribir "Introduce el número ", i, ":";
+		Leer num;
+		
+		// En la primera vuelta (i = 1) inicializamos maximo y minimo
+		Si i = 1 Entonces
+			maximo <- num;
+			minimo <- num;
+		SiNo
+			Si num > maximo Entonces
+				maximo <- num;
+			FinSi
+			Si num < minimo Entonces
+				minimo <- num;
+			FinSi
+		FinSi
+	FinPara
+	
+	Escribir "El valor MÁXIMO introducido es: ", maximo;
+	Escribir "El valor MÍNIMO introducido es: ", minimo;
+FinAlgoritmo`
+            },
+            {
+                id: 21,
+                title: "Cargar 5 notas en un Vector y calcular su promedio",
+                category: "vector arreglo dimension bucle para media notas",
+                tags: ["Vector", "Dimension", "Para"],
+                statement: "Crear un arreglo (vector) de 5 posiciones para almacenar las notas de un alumno. Pedir las 5 notas, mostrarlas por pantalla y calcular su nota media.",
+                code: `Algoritmo VectorCincoNotas
+	Definir notas, suma, media Como Real;
+	Definir i Como Entero;
+	Dimension notas[5];
+	
+	suma <- 0;
+	
+	// 1. Llenar el vector y acumular la suma
+	Para i <- 1 Hasta 5 Con Paso 1 Hacer
+		Escribir Sin Saltar "Introduce la nota ", i, ": ";
+		Leer notas[i];
+		suma <- suma + notas[i];
+	FinPara
+	
+	// 2. Mostrar todas las notas guardadas
+	Escribir "--- Notas almacenadas en el vector ---";
+	Para i <- 1 Hasta 5 Con Paso 1 Hacer
+		Escribir "Nota [", i, "] = ", notas[i];
+	FinPara
+	
+	media <- suma / 5;
+	Escribir "El promedio final de las 5 notas es: ", media;
+FinAlgoritmo`
+            },
+            {
+                id: 22,
+                title: "Contar las vocales de una palabra o frase",
+                category: "texto cadenas funciones longitud subcadena minusculas bucle para",
+                tags: ["Texto / Cadenas", "Para", "Subcadena"],
+                statement: "Pedir una palabra o frase por teclado, recorrerla letra por letra con Longitud() y Subcadena(), y contar cuántas vocales contiene en total.",
+                code: `Algoritmo ContarVocalesDeTexto
+	Definir frase, letra Como Caracter;
+	Definir i, totalVocales Como Entero;
+	
+	Escribir "Introduce una palabra o frase:";
+	Leer frase;
+	
+	// Pasamos a minúsculas para simplificar la comparación
+	frase <- Minusculas(frase);
+	totalVocales <- 0;
+	
+	Para i <- 1 Hasta Longitud(frase) Con Paso 1 Hacer
+		letra <- Subcadena(frase, i, i);
+		
+		Si letra = "a" O letra = "e" O letra = "i" O letra = "o" O letra = "u" Entonces
+			totalVocales <- totalVocales + 1;
+		FinSi
+	FinPara
+	
+	Escribir "La frase contiene un total de ", totalVocales, " vocales.";
+FinAlgoritmo`
+            }
+        ];
+
+        // 2. FUNCIÓN DE RESALTADO DE SINTAXIS DE PSEINT Y ESCAPE HTML
+        function highlightPSeInt(rawCode) {
+            // Primero escapamos caracteres HTML especiales
+            let escaped = rawCode
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+
+            // Expresión regular combinada para evitar que un reemplazo rompa otro:
+            // Grupo 1: Comentarios (// hasta fin de línea)
+            // Grupo 2: Cadenas entre comillas ("...")
+            // Grupo 3: Operador de asignación (&lt;-) o distinto (&lt;&gt;)
+            // Grupo 4: Tipos de datos y valores lógicos
+            // Grupo 5: Palabras clave de PSeInt
+            // Grupo 6: Números
+            const tokenRegex = /(\/\/[^\n]*)|("[^"]*")|(&lt;-|&lt;&gt;|&lt;=|&gt;=)|\b(Entero|Real|Caracter|Logico|Verdadero|Falso)\b|\b(Algoritmo|FinAlgoritmo|Proceso|FinProceso|Definir|Como|Dimension|Escribir|Leer|Sin|Saltar|Si|Entonces|SiNo|FinSi|Segun|Hacer|De|Otro|Modo|FinSegun|Mientras|FinMientras|Repetir|Hasta|Que|Para|Con|Paso|FinPara|MOD|Y|O|NO|Longitud|Subcadena|Mayusculas|Minusculas|Aleatorio|azar|rc|raiz|abs|trunc|redon)\b|\b(\d+(?:\.\d+)?)\b/g;
+
+            return escaped.replace(tokenRegex, (match, com, str, op, type, kw, num) => {
+                if (com) return `<span class="tok-com">${com}</span>`;
+                if (str) return `<span class="tok-str">${str}</span>`;
+                if (op)  return `<span class="tok-op">${op}</span>`;
+                if (type) return `<span class="tok-type">${type}</span>`;
+                if (kw)  return `<span class="tok-kw">${kw}</span>`;
+                if (num) return `<span class="tok-num">${num}</span>`;
+                return match;
+            });
+        }
+
+        // 3. FUNCIÓN PARA CREAR EL BLOQUE DE CÓDIGO CON BOTÓN COPIAR
+        function createCodeBlockHTML(rawCode) {
+            const highlighted = highlightPSeInt(rawCode);
+            const encodedRaw = encodeURIComponent(rawCode);
+            return `
+                <div class="relative group my-3 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/90">
+                    <div class="flex items-center justify-between px-4 py-2 bg-slate-200/70 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400">
+                        <span class="font-mono font-semibold uppercase tracking-wider">PSeInt Pseudocódigo</span>
+                        <button 
+                            type="button"
+                            data-code="${encodedRaw}"
+                            onclick="copyCode(this)"
+                            class="copy-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 hover:text-indigo-600 dark:hover:text-indigo-300 font-medium border border-slate-300 dark:border-slate-600 shadow-2xs transition-all cursor-pointer"
+                        >
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Copiar</span>
+                        </button>
+                    </div>
+                    <pre class="pseint-code p-4 text-sm overflow-x-auto text-slate-800 dark:text-slate-100"><code>${highlighted}</code></pre>
+                </div>
+            `;
+        }
+
+        // 4. COPIAR AL PORTAPAPELES (Compatible con iFrame usando document.execCommand)
+        window.copyCode = function(buttonEl) {
+            const rawCode = decodeURIComponent(buttonEl.getAttribute('data-code'));
+            const textarea = document.createElement('textarea');
+            textarea.value = rawCode;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                const originalHTML = buttonEl.innerHTML;
+                buttonEl.innerHTML = `
+                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-semibold">¡Copiado!</span>
+                `;
+                setTimeout(() => {
+                    buttonEl.innerHTML = originalHTML;
+                }, 1800);
+            } catch (err) {
+                console.error('No se pudo copiar el código', err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        };
+
+        // 5. TRANSFORMAR TODOS LOS BLOQUES <pre class="code-block"> DE LA TEORÍA
+        function initTheoryCodeBlocks() {
+            const blocks = document.querySelectorAll('pre.code-block');
+            blocks.forEach(pre => {
+                const raw = pre.textContent.trim();
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = createCodeBlockHTML(raw);
+                pre.replaceWith(wrapper.firstElementChild);
+            });
+        }
+
+        // 6. RENDERIZAR LAS 22 TARJETAS DE EJERCICIOS (ACORDEÓN) Y FILTRADO
+        function highlightTextMatch(text, query) {
+            if (!query) return text;
+            const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${safeQuery})`, 'gi');
+            return text.replace(regex, '<mark class="search-highlight">$1</mark>');
+        }
+
+        function renderExercises(filterQuery = '') {
+            const container = document.getElementById('exercisesContainer');
+            const noResults = document.getElementById('noExercisesMsg');
+            const countBadge = document.getElementById('searchResultCount');
+            const normalizedQuery = filterQuery.trim().toLowerCase();
+
+            container.innerHTML = '';
+            let matchCount = 0;
+
+            exercisesData.forEach(ex => {
+                const searchableText = `${ex.id} ${ex.title} ${ex.statement} ${ex.category} ${ex.tags.join(' ')} ${ex.code}`.toLowerCase();
+                const matches = !normalizedQuery || searchableText.includes(normalizedQuery);
+
+                if (matches) {
+                    matchCount++;
+                    const titleHTML = highlightTextMatch(ex.title, filterQuery.trim());
+                    const statementHTML = highlightTextMatch(ex.statement, filterQuery.trim());
+
+                    const tagsHTML = ex.tags.map(tag => `
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60">
+                            ${highlightTextMatch(tag, filterQuery.trim())}
+                        </span>
+                    `).join('');
+
+                    const card = document.createElement('div');
+                    card.className = `exercise-card rounded-2xl border transition-all ${
+                        normalizedQuery 
+                            ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-sm' 
+                            : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-700'
+                    }`;
+
+                    card.innerHTML = `
+                        <div class="p-5">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+                                <div class="flex items-center gap-2.5 flex-wrap">
+                                    <span class="px-2.5 py-1 rounded-lg bg-slate-900 dark:bg-indigo-600 text-white font-mono text-xs font-bold">
+                                        #${String(ex.id).padStart(2, '0')}
+                                    </span>
+                                    <h4 class="font-bold text-base sm:text-lg text-slate-900 dark:text-white">${titleHTML}</h4>
+                                </div>
+                                <div class="flex flex-wrap gap-1.5">
+                                    ${tagsHTML}
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">
+                                ${statementHTML}
+                            </p>
+                            <div class="flex items-center justify-between">
+                                <button 
+                                    type="button"
+                                    onclick="toggleExerciseCode(${ex.id})"
+                                    id="btn-ex-${ex.id}"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs transition-colors cursor-pointer"
+                                >
+                                    <svg id="icon-ex-${ex.id}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                    <span id="txt-ex-${ex.id}">Ver código</span>
+                                </button>
+                                ${normalizedQuery ? '<span class="text-xs font-medium text-indigo-600 dark:text-indigo-400">Coincidencia encontrada</span>' : ''}
+                            </div>
+                            <!-- Contenedor plegable del código -->
+                            <div id="code-ex-${ex.id}" class="exercise-code-panel hidden mt-4 pt-3 border-t border-slate-200 dark:border-slate-700/70">
+                                ${createCodeBlockHTML(ex.code)}
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                }
+            });
+
+            if (matchCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            if (normalizedQuery) {
+                countBadge.textContent = `Mostrando ${matchCount} de 22 ejercicios para "${filterQuery.trim()}"`;
+                countBadge.classList.remove('hidden');
+            } else {
+                countBadge.classList.add('hidden');
+            }
+        }
+
+        // Alternar visibilidad del código de un ejercicio individual
+        window.toggleExerciseCode = function(id) {
+            const panel = document.getElementById(`code-ex-${id}`);
+            const txt = document.getElementById(`txt-ex-${id}`);
+            const icon = document.getElementById(`icon-ex-${id}`);
+            const isHidden = panel.classList.contains('hidden');
+
+            if (isHidden) {
+                panel.classList.remove('hidden');
+                txt.textContent = 'Ocultar código';
+                icon.classList.add('rotate-180');
+            } else {
+                panel.classList.add('hidden');
+                txt.textContent = 'Ver código';
+                icon.classList.remove('rotate-180');
+            }
+        };
+
+        // 7. INICIALIZACIÓN DE EVENTOS (TEMA, BÚSQUEDA, MENÚ MÓVIL, EXPANDIR/COLAPSAR)
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheoryCodeBlocks();
+            renderExercises();
+
+            // Modo Claro / Oscuro
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const savedTheme = localStorage.getItem('pseint_theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                const isDark = document.documentElement.classList.contains('dark');
+                localStorage.setItem('pseint_theme', isDark ? 'dark' : 'light');
+            });
+
+            // Buscador en tiempo real
+            const searchInput = document.getElementById('globalSearchInput');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const resetSearchBtn = document.getElementById('resetSearchBtn');
+            const filterChips = document.querySelectorAll('.filter-chip');
+
+            function updateActiveChip(query) {
+                filterChips.forEach(chip => {
+                    if (chip.dataset.filter.toLowerCase() === query.toLowerCase()) {
+                        chip.className = 'filter-chip px-3 py-1 rounded-full text-xs font-semibold bg-indigo-600 text-white transition-colors';
+                    } else {
+                        chip.className = 'filter-chip px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-100 dark:hover:bg-indigo-950 transition-colors';
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', (e) => {
+                const val = e.target.value;
+                clearSearchBtn.classList.toggle('hidden', !val);
+                updateActiveChip(val);
+                renderExercises(val);
+                // Si el usuario busca desde arriba, desplazamos suavemente a la sección 15
+                if (val.trim().length === 2) {
+                    document.getElementById('sec-15').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+
+            clearSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                clearSearchBtn.classList.add('hidden');
+                updateActiveChip('');
+                renderExercises('');
+            });
+
+            resetSearchBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                clearSearchBtn.classList.add('hidden');
+                updateActiveChip('');
+                renderExercises('');
+            });
+
+            filterChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const filterVal = chip.dataset.filter;
+                    searchInput.value = filterVal;
+                    clearSearchBtn.classList.toggle('hidden', !filterVal);
+                    updateActiveChip(filterVal);
+                    renderExercises(filterVal);
+                });
+            });
+
+            // Botones Abrir todos / Cerrar todos
+            document.getElementById('expandAllBtn').addEventListener('click', () => {
+                exercisesData.forEach(ex => {
+                    const panel = document.getElementById(`code-ex-${ex.id}`);
+                    if (panel && panel.classList.contains('hidden')) {
+                        window.toggleExerciseCode(ex.id);
+                    }
+                });
+            });
+
+            document.getElementById('collapseAllBtn').addEventListener('click', () => {
+                exercisesData.forEach(ex => {
+                    const panel = document.getElementById(`code-ex-${ex.id}`);
+                    if (panel && !panel.classList.contains('hidden')) {
+                        window.toggleExerciseCode(ex.id);
+                    }
+                });
+            });
+
+            // Menú lateral en móvil
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            function toggleMobileMenu() {
+                const isClosed = sidebar.classList.contains('-translate-x-full');
+                if (isClosed) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                }
+            }
+
+            mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+            sidebarOverlay.addEventListener('click', toggleMobileMenu);
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 1024) {
+                        toggleMobileMenu();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
